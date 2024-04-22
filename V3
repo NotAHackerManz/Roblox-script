@@ -1,0 +1,130 @@
+-- Function to toggle the trigger bot
+function toggle_trigger_bot()
+    trigger_bot_enabled = not trigger_bot_enabled
+    if trigger_bot_enabled then
+        print("Trigger Bot enabled")
+        while trigger_bot_enabled do
+            wait(0.1)
+            click()  -- Perform a click when target detected
+        end
+    else
+        print("Trigger Bot disabled")
+    end
+end
+
+-- Function to toggle the aimbot
+function toggle_aimbot()
+    aimbot_enabled = not aimbot_enabled
+    if aimbot_enabled then
+        print("Aimbot enabled")
+        while aimbot_enabled do
+            -- Implement aimbot logic here
+            wait(0.1)
+        end
+    else
+        print("Aimbot disabled")
+    end
+end
+
+-- Function to toggle tracers with toggleable boxes
+function toggle_tracers_and_boxes()
+    tracers_and_boxes_enabled = not tracers_and_boxes_enabled
+    if tracers_and_boxes_enabled then
+        print("Tracers and Boxes enabled")
+        while tracers_and_boxes_enabled do
+            -- Implement tracers and boxes logic here
+            wait(0.1)
+        end
+    else
+        print("Tracers and Boxes disabled")
+    end
+end
+
+-- Function to handle settings
+function handle_settings()
+    -- Implement settings functionality here
+end
+
+-- Function to handle color slider for tracers
+function handle_color_slider(value)
+    -- Set color based on slider value
+    tracer_color = Color3.new(value, 0, 0)
+    print("Tracer color set to: " .. tostring(tracer_color))
+end
+
+-- Initialize variables
+trigger_bot_enabled = false
+aimbot_enabled = false
+tracers_and_boxes_enabled = false
+tracer_color = Color3.new(1, 0, 0) -- Default color
+
+-- GUI for toggles and color slider
+local gui = Instance.new("ScreenGui")
+gui.Parent = game.CoreGui
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0.9, 0, 0.7, 0)
+frame.Position = UDim2.new(0.05, 0, 0.15, 0)
+frame.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+frame.BorderSizePixel = 2
+frame.BorderColor3 = Color3.new(1, 1, 1)
+frame.Parent = gui
+
+-- Function to create a toggle button
+local function createToggleButton(text, position, callback)
+    local toggleButton = Instance.new("TextButton")
+    toggleButton.Size = UDim2.new(0.9, 0, 0.1, 0)
+    toggleButton.Position = position
+    toggleButton.AnchorPoint = Vector2.new(0.5, 0)
+    toggleButton.BackgroundColor3 = Color3.new(0.4, 0.4, 0.4)
+    toggleButton.BorderSizePixel = 2
+    toggleButton.BorderColor3 = Color3.new(1, 1, 1)
+    toggleButton.TextColor3 = Color3.new(1, 1, 1)
+    toggleButton.Text = text
+    toggleButton.Parent = frame
+    toggleButton.MouseButton1Click:Connect(callback)
+end
+
+-- Create toggle buttons
+createToggleButton("Toggle Trigger Bot", UDim2.new(0.5, 0, 0.05, 0), toggle_trigger_bot)
+createToggleButton("Toggle Aimbot", UDim2.new(0.5, 0, 0.2, 0), toggle_aimbot)
+createToggleButton("Toggle Tracers and Boxes", UDim2.new(0.5, 0, 0.35, 0), toggle_tracers_and_boxes)
+
+-- Function to create a slider
+local function createSlider(text, position, callback)
+    local sliderFrame = Instance.new("Frame")
+    sliderFrame.Size = UDim2.new(0.9, 0, 0.1, 0)
+    sliderFrame.Position = position
+    sliderFrame.AnchorPoint = Vector2.new(0.5, 0)
+    sliderFrame.BackgroundColor3 = Color3.new(0.4, 0.4, 0.4)
+    sliderFrame.BorderSizePixel = 2
+    sliderFrame.BorderColor3 = Color3.new(1, 1, 1)
+    sliderFrame.Parent = frame
+    
+    local sliderLabel = Instance.new("TextLabel")
+    sliderLabel.Size = UDim2.new(0.3, 0, 1, 0)
+    sliderLabel.Position = UDim2.new(0, 0, 0, 0)
+    sliderLabel.BackgroundColor3 = Color3.new(1, 1, 1)
+    sliderLabel.TextColor3 = Color3.new(0, 0, 0)
+    sliderLabel.Text = text
+    sliderLabel.Parent = sliderFrame
+    
+    local slider = Instance.new("TextButton")
+    slider.Size = UDim2.new(0.6, 0, 1, 0)
+    slider.Position = UDim2.new(0.35, 0, 0, 0)
+    slider.AnchorPoint = Vector2.new(0, 0)
+    slider.BackgroundColor3 = Color3.new(1, 1, 1)
+    slider.BorderSizePixel = 0
+    slider.Parent = sliderFrame
+    slider.MouseButton1Down:Connect(callback)
+end
+
+-- Create color slider
+createSlider("Tracer Color Slider", UDim2.new(0.5, 0, 0.5, 0), function()
+    local mouse = game.Players.LocalPlayer:GetMouse()
+    local colorSliderPosition = slider.AbsolutePosition
+    local mouseX = mouse.X
+    local relativeX = mouseX - colorSliderPosition.X
+    local value = math.clamp(relativeX / slider.AbsoluteSize.X, 0, 1)
+    handle_color_slider(value)
+end)
