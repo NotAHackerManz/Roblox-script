@@ -1,0 +1,125 @@
+-- Initialize variables
+local features = {
+    trigger_bot_enabled = false,
+    aimbot_enabled = false,
+    lock_through_walls = false,
+    tracers_and_boxes_enabled = false,
+    troll_mode_enabled = false,
+    fly_enabled = false,
+    fly_speed = 1,
+    noclip_enabled = false,
+    teleport_enabled = false,
+    tracer_color = Color3.new(1, 0, 0), -- Default color
+    minimized = false,
+    speed_hack_enabled = false,
+    auto_reload_enabled = false,
+    silent_aim_enabled = false,
+    voice_chat_enabled = false
+}
+
+-- GUI for toggles and color slider
+local gui = Instance.new("ScreenGui")
+gui.IgnoreGuiInset = true -- For mobile compatibility
+gui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+-- Main frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0.4, 0, 0.6, 0)
+frame.Position = UDim2.new(0.3, 0, 0.2, 0)
+frame.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+frame.BorderSizePixel = 2
+frame.BorderColor3 = Color3.new(1, 1, 1)
+frame.Active = true -- Allow input detection
+frame.Parent = gui
+
+-- Function to create a toggle button
+local function createToggleButton(text, position, callback)
+    local toggleButton = Instance.new("TextButton")
+    toggleButton.Size = UDim2.new(0.8, 0, 0, 30)
+    toggleButton.Position = position
+    toggleButton.BackgroundColor3 = Color3.fromRGB(65, 65, 65)
+    toggleButton.BorderSizePixel = 0
+    toggleButton.TextColor3 = Color3.new(1, 1, 1)
+    toggleButton.Text = text
+    toggleButton.Font = Enum.Font.SourceSansBold
+    toggleButton.TextSize = 16
+    toggleButton.Parent = frame
+
+    -- Touch input event
+    toggleButton.Activated:Connect(callback)
+end
+
+-- Function to create a label
+local function createLabel(text, position)
+    local label = Instance.new("TextLabel")
+    label.Text = text
+    label.Size = UDim2.new(0.8, 0, 0, 30)
+    label.Position = position
+    label.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    label.BorderSizePixel = 0
+    label.TextColor3 = Color3.new(1, 1, 1)
+    label.Font = Enum.Font.SourceSansBold
+    label.TextSize = 16
+    label.Parent = frame
+end
+
+-- Create section labels
+createLabel("Cheats", UDim2.new(0.1, 0, 0.05, 0))
+createLabel("Aimbot", UDim2.new(0.1, 0, 0.2, 0))
+createLabel("Misc", UDim2.new(0.1, 0, 0.35, 0))
+
+-- Create toggle buttons
+createToggleButton("Trigger Bot", UDim2.new(0.1, 0, 0.1, 0), function()
+    features.trigger_bot_enabled = not features.trigger_bot_enabled
+    print("Trigger Bot " .. (features.trigger_bot_enabled and "enabled" or "disabled"))
+end)
+
+createToggleButton("Aimbot", UDim2.new(0.1, 0, 0.25, 0), function()
+    features.aimbot_enabled = not features.aimbot_enabled
+    print("Aimbot " .. (features.aimbot_enabled and "enabled" or "disabled"))
+end)
+
+-- Add more toggle buttons as needed
+
+-- Function to handle frame dragging
+local function enableDragging()
+    local UserInputService = game:GetService("UserInputService")
+    local dragging
+    local dragInput
+    local dragStart
+    local startPos
+
+    local function update(input)
+        local delta = input.Position - dragStart
+        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+
+    frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
+
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+
+    frame.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            update(input)
+        end
+    end)
+end
+
+-- Enable dragging for the frame
+enableDragging()
