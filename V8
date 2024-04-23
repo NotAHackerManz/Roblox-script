@@ -1,0 +1,179 @@
+-- Initialize variables
+local trigger_bot_enabled = false
+local aimbot_enabled = false
+local lock_through_walls = false
+local tracers_and_boxes_enabled = false
+local troll_mode_enabled = false
+local fly_enabled = false
+local fly_speed = 1
+local noclip_enabled = false
+local teleport_enabled = false
+local tracer_color = Color3.new(1, 0, 0) -- Default color
+local minimized = false
+local speed_hack_enabled = false
+local auto_reload_enabled = false
+local silent_aim_enabled = false
+local voice_chat_enabled = false
+
+-- GUI for toggles and color slider
+local gui = Instance.new("ScreenGui")
+gui.IgnoreGuiInset = true -- For mobile compatibility
+gui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+-- Main frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0.9, 0, 0.9, 0) -- Adjusted size to fit mobile screen better
+frame.Position = UDim2.new(0.05, 0, 0.05, 0) -- Adjusted position to fit mobile screen better
+frame.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+frame.BorderSizePixel = 2
+frame.BorderColor3 = Color3.new(1, 1, 1)
+frame.Active = true -- Allow input detection
+frame.Parent = gui
+
+-- Function to create a toggle button
+local function createToggleButton(text, position, callback)
+    local toggleButton = Instance.new("TextButton") -- Changed to TextButton for better touch interaction
+    toggleButton.Size = UDim2.new(0.9, 0, 0, 30)
+    toggleButton.Position = position
+    toggleButton.BackgroundColor3 = Color3.new(0.4, 0.4, 0.4)
+    toggleButton.BorderSizePixel = 2
+    toggleButton.BorderColor3 = Color3.new(1, 1, 1)
+    toggleButton.TextColor3 = Color3.new(1, 1, 1)
+    toggleButton.Text = text
+    toggleButton.Font = Enum.Font.SourceSansBold
+    toggleButton.TextSize = 16
+    toggleButton.Parent = frame
+
+    -- Touch input event
+    toggleButton.MouseButton1Click:Connect(callback)
+    -- Mouse input event (for compatibility)
+    toggleButton.TouchTap:Connect(callback)
+end
+
+-- Troll-based features
+
+-- Fake Chat Messages
+local function sendFakeChatMessage(message)
+    -- Code to send a fake chat message
+    print("[Fake Chat] " .. message)
+end
+
+-- Teleportation Pranks
+local function teleportPlayer(player, destination)
+    -- Code to teleport the player to the destination
+    print("[Teleport] Teleporting " .. player.Name .. " to " .. destination)
+end
+
+-- Disguises
+local function disguiseAsPlayer(player, disguisePlayer)
+    -- Code to disguise the player as another player
+    print("[Disguise] " .. player.Name .. " disguised as " .. disguisePlayer.Name)
+end
+
+-- Invisible Mode
+local function makePlayerInvisible(player)
+    -- Code to make the player temporarily invisible
+    print("[Invisible Mode] " .. player.Name .. " is now invisible")
+end
+
+-- Random Sound Effects
+local soundEffects = {
+    "Meow",
+    "Boo",
+    "Laughter",
+    -- Add more sound effects as needed
+}
+
+local function playRandomSoundEffect()
+    local randomIndex = math.random(1, #soundEffects)
+    local randomSound = soundEffects[randomIndex]
+    -- Code to play the random sound effect
+    print("[Sound Effect] Playing " .. randomSound)
+end
+
+-- Gravity Manipulation
+local function changeGravity(gravity)
+    -- Code to change the gravity in certain areas
+    print("[Gravity] Gravity changed to " .. gravity)
+end
+
+-- NPC Interactions
+local function spawnNPCWithDialogue(dialogue)
+    -- Code to spawn an NPC with custom dialogue
+    print("[NPC] " .. dialogue)
+end
+
+-- Object Manipulation
+local function manipulateObject(object, transformation)
+    -- Code to manipulate objects in the game world
+    print("[Object Manipulation] " .. transformation)
+end
+
+-- Create toggle buttons for troll-based features
+
+createToggleButton("Fake Chat", UDim2.new(0.05, 0, 0.05, 0), function()
+    sendFakeChatMessage("Hello everyone!")
+end)
+
+createToggleButton("Teleport", UDim2.new(0.05, 0, 0.15, 0), function()
+    teleportPlayer(game.Players.LocalPlayer, Vector3.new(0, 100, 0))
+end)
+
+createToggleButton("Disguise", UDim2.new(0.05, 0, 0.25, 0), function()
+    local players = game.Players:GetPlayers()
+    if #players > 1 then
+        disguiseAsPlayer(game.Players.LocalPlayer, players[1])
+    end
+end)
+
+createToggleButton("Invisible Mode", UDim2.new(0.05, 0, 0.35, 0), function()
+    makePlayerInvisible(game.Players.LocalPlayer)
+end)
+
+createToggleButton("Random Sound", UDim2.new(0.05, 0, 0.45, 0), function()
+    playRandomSoundEffect
+end)
+
+-- Function to toggle Aimbot
+local function toggleAimbot()
+    aimbot_enabled = not aimbot_enabled
+    print("Aimbot " .. (aimbot_enabled and "enabled" or "disabled"))
+    if aimbot_enabled then
+        spawn(continuousAimbot)
+    end
+end
+
+-- Create toggle button for Aimbot
+createToggleButton("Aimbot", UDim2.new(0.05, 0, 0.55, 0), toggleAimbot)
+
+-- Add more toggle buttons as needed
+
+-- Toggle function for Aimbot lock through walls
+local function toggleLockThroughWalls()
+    lock_through_walls = not lock_through_walls
+    print("Lock Through Walls " .. (lock_through_walls and "enabled" or "disabled"))
+end
+
+-- Create toggle button for Aimbot lock through walls
+createToggleButton("Lock Through Walls", UDim2.new(0.05, 0, 0.65, 0), toggleLockThroughWalls)
+
+-- Function to toggle Tracers & Boxes
+local function toggleTracersAndBoxes()
+    tracers_and_boxes_enabled = not tracers_and_boxes_enabled
+    print("Tracers & Boxes " .. (tracers_and_boxes_enabled and "enabled" or "disabled"))
+    updateTracersAndBoxes()
+end
+
+-- Create toggle button for Tracers & Boxes
+createToggleButton("Tracers & Boxes", UDim2.new(0, 5, 0, 80), toggleTracersAndBoxes)
+
+-- Function to continuously aim the aimbot at the nearest player's head while enabled
+local function continuousAimbot()
+    while aimbot_enabled do
+        aimAtNearestPlayerHead()
+        wait(0.1) -- Adjust this value for smoother aiming
+    end
+end
+
+-- Start continuous aiming when aimbot is enabled
+if aimbot_enabled then
